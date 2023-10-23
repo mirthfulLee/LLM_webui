@@ -143,13 +143,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
                 with gr.Row(elem_id="chatbot-footer"):
                     with gr.Box(elem_id="chatbot-input-box"):
                         with gr.Row(elem_id="chatbot-input-row"):
-                            gr.HTML(get_html("chatbot_more.html").format(
-                                single_turn_label=i18n("单轮对话"),
-                                websearch_label=i18n("在线搜索"),
-                                upload_file_label=i18n("上传文件"),
-                                uploaded_files_label=i18n("知识库文件"),
-                                uploaded_files_tip=i18n("在工具箱中管理知识库文件")
-                            ))
                             with gr.Row(elem_id="chatbot-input-tb-row"):
                                 with gr.Column(min_width=225, scale=12):
                                     user_input = gr.Textbox(
@@ -195,53 +188,41 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
                     gr.HTML(get_html("close_btn.html").format(
                         obj="toolbox"), elem_classes="close-btn")
                 with gr.Tabs(elem_id="chuanhu-toolbox-tabs"):
-                    with gr.Tab(label=i18n("对话")):
-                        with gr.Accordion(label="Prompt", open=True):
-                            systemPromptTxt = gr.Textbox(
-                                show_label=True,
-                                placeholder=i18n("在这里输入System Prompt..."),
-                                label="System prompt",
-                                value=INITIAL_SYSTEM_PROMPT,
-                                lines=8
-                            )
-                            retain_system_prompt_checkbox = gr.Checkbox(
-                                label=i18n("新建对话保留Prompt"), value=False, visible=True, elem_classes="switch-checkbox")
-                            with gr.Accordion(label=i18n("加载Prompt模板"), open=False):
-                                with gr.Column():
-                                    with gr.Row():
-                                        with gr.Column(scale=6):
-                                            templateFileSelectDropdown = gr.Dropdown(
-                                                label=i18n("选择Prompt模板集合文件"),
-                                                choices=get_template_names(),
-                                                multiselect=False,
-                                                value=get_template_names()[0],
-                                                container=False,
-                                            )
-                                        with gr.Column(scale=1):
-                                            templateRefreshBtn = gr.Button(
-                                                i18n("🔄 刷新"))
-                                    with gr.Row():
-                                        with gr.Column():
-                                            templateSelectDropdown = gr.Dropdown(
-                                                label=i18n("从Prompt模板中加载"),
-                                                choices=load_template(
-                                                    get_template_names()[
-                                                        0], mode=1
-                                                ),
-                                                multiselect=False,
-                                                container=False,
-                                            )
-                        gr.Markdown("---", elem_classes="hr-line")
-                        with gr.Accordion(label=i18n("知识库"), open=True):
-                            use_websearch_checkbox = gr.Checkbox(label=i18n(
-                                "使用在线搜索"), value=False, elem_classes="switch-checkbox", elem_id="gr-websearch-cb", visible=False)
-                            index_files = gr.Files(label=i18n(
-                                "上传"), type="file", elem_id="upload-index-file")
-                            two_column = gr.Checkbox(label=i18n(
-                                "双栏pdf"), value=advance_docs["pdf"].get("two_column", False))
-                            summarize_btn = gr.Button(i18n("总结"))
-                            # TODO: 公式ocr
-                            # formula_ocr = gr.Checkbox(label=i18n("识别公式"), value=advance_docs["pdf"].get("formula_ocr", False))
+                    with gr.Tab(label=i18n("Prompt")):
+                        with gr.Accordion(label=i18n("加载Prompt模板"), open=False):
+                            with gr.Column():
+                                with gr.Row():
+                                    with gr.Column(scale=6):
+                                        templateFileSelectDropdown = gr.Dropdown(
+                                            label=i18n("选择Prompt模板集合文件"),
+                                            choices=get_template_names(),
+                                            multiselect=False,
+                                            value=get_template_names()[0],
+                                            container=False,
+                                        )
+                                    with gr.Column(scale=1):
+                                        templateRefreshBtn = gr.Button(
+                                            i18n("🔄 刷新"))
+                                with gr.Row():
+                                    with gr.Column():
+                                        templateSelectDropdown = gr.Dropdown(
+                                            label=i18n("从Prompt模板中加载"),
+                                            choices=load_template(
+                                                get_template_names()[
+                                                    0], mode=1
+                                            ),
+                                            multiselect=False,
+                                            container=False,
+                                        )
+                        systemPromptTxt = gr.Textbox(
+                            show_label=True,
+                            placeholder=i18n("在这里输入System Prompt..."),
+                            label="System prompt",
+                            value=INITIAL_SYSTEM_PROMPT,
+                            lines=8
+                        )
+                        retain_system_prompt_checkbox = gr.Checkbox(
+                            label=i18n("新建对话保留Prompt"), value=False, visible=True, elem_classes="switch-checkbox")
 
                     with gr.Tab(label=i18n("参数")):
                         gr.Markdown(i18n("# ⚠️ 务必谨慎更改 ⚠️"),
@@ -324,10 +305,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
                                 value=user_name.value,
                                 lines=1,
                             )
-                    with gr.Tab(label=i18n("拓展")):
-                        gr.Markdown(
-                            "Will be here soon...\n(We hope)\n\nAnd we hope you can help us to make more extensions!")
-
                     # changeAPIURLBtn = gr.Button(i18n("🔄 切换API地址"))
 
     with gr.Row(elem_id="popup-wrapper"):
@@ -484,8 +461,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
                 historySelectBtn = gr.Button(
                     visible=False, elem_classes="invisible-btn", elem_id="history-select-btn")  # Not used
 
-    # https://github.com/gradio-app/gradio/pull/3296
-
     def create_greeting(request: gr.Request):
         if hasattr(request, "username") and request.username:  # is not None or is not ""
             logging.info(f"Get User Name: {request.username}")
@@ -513,8 +488,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
             user_question,
             chatbot,
             use_streaming_checkbox,
-            use_websearch_checkbox,
-            index_files,
             language_select_dropdown,
         ],
         outputs=[chatbot, status_display],
@@ -578,11 +551,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
 
     # submitBtn.click(auto_name_chat_history, [current_model, user_question, chatbot, user_name], [historySelectList], show_progress=False)
 
-    index_files.change(handle_file_upload, [current_model, index_files, chatbot, language_select_dropdown], [
-                       index_files, chatbot, status_display])
-    summarize_btn.click(handle_summarize_index, [
-                        current_model, index_files, chatbot, language_select_dropdown], [chatbot, status_display])
-
     emptyBtn.click(
         reset,
         inputs=[current_model, retain_system_prompt_checkbox],
@@ -597,8 +565,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
             current_model,
             chatbot,
             use_streaming_checkbox,
-            use_websearch_checkbox,
-            index_files,
             language_select_dropdown,
         ],
         [chatbot, status_display],
@@ -632,8 +598,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
         [status_display],
         show_progress=False
     )
-
-    two_column.change(update_doc_config, [two_column], None)
 
     # LLM Models
     keyTxt.change(set_key, [current_model, keyTxt], [
@@ -772,12 +736,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
         outputs=[single_turn_checkbox],
         _js='(a)=>{return bgChangeSingleSession(a);}'
     )
-    changeOnlineSearchBtn.click(
-        fn=lambda value: gr.Checkbox.update(value=value),
-        inputs=[use_websearch_checkbox],
-        outputs=[use_websearch_checkbox],
-        _js='(a)=>{return bgChangeOnlineSearch(a);}'
-    )
     historySelectBtn.click(  # This is an experimental feature... Not actually used.
         fn=load_chat_history,
         inputs=[current_model, historySelectList],
@@ -786,13 +744,8 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
     )
 
 
-logging.info(
-    colorama.Back.GREEN
-    + "\n川虎的温馨提示：访问 http://localhost:7860 查看界面"
-    + colorama.Style.RESET_ALL
-)
 # 默认开启本地服务器，默认可以直接从IP访问，默认不创建公开分享链接
-demo.title = i18n("川虎Chat 🚀")
+demo.title = i18n("Chat for Code Translation")
 
 if __name__ == "__main__":
     reload_javascript()
