@@ -709,19 +709,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
     default_btn.click(
         reset_default, [], [apihostTxt, proxyTxt, status_display], show_progress=True
     )
-    # changeAPIURLBtn.click(
-    #     change_api_host,
-    #     [apihostTxt],
-    #     [status_display],
-    #     show_progress=True,
-    # )
-    # changeProxyBtn.click(
-    #     change_proxy,
-    #     [proxyTxt],
-    #     [status_display],
-    #     show_progress=True,
-    # )
-    # checkUpdateBtn.click(fn=None, _js='manualCheckUpdate')
 
     # Invisible elements
     updateChuanhuBtn.click(
@@ -749,6 +736,11 @@ demo.title = i18n("Chat for Code Translation")
 
 if __name__ == "__main__":
     reload_javascript()
+    logging.info(
+        colorama.Back.GREEN
+        + "\n本地部署可访问 http://localhost:" + server_port
+        + colorama.Style.RESET_ALL
+    )
     demo.queue(concurrency_count=CONCURRENT_COUNT).launch(
         blocked_paths=["config.json"],
         server_name=server_name,
