@@ -456,8 +456,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
                     visible=False, elem_classes="invisible-btn", elem_id="update-chuanhu-btn")
                 changeSingleSessionBtn = gr.Button(
                     visible=False, elem_classes="invisible-btn", elem_id="change-single-session-btn")
-                changeOnlineSearchBtn = gr.Button(
-                    visible=False, elem_classes="invisible-btn", elem_id="change-online-search-btn")
                 historySelectBtn = gr.Button(
                     visible=False, elem_classes="invisible-btn", elem_id="history-select-btn")  # Not used
 

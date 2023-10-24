@@ -352,67 +352,12 @@ class BaseLLMModel:
             chatbot.append([i18n("上传了")+str(len(files))+"个文件", summary])
         return chatbot, status
 
-    def prepare_inputs(self, real_inputs, use_websearch, files, reply_language, chatbot, load_from_cache_if_possible=True):
+    def prepare_inputs(self, real_inputs, files, reply_language, chatbot):
         fake_inputs = None
         display_append = []
         limited_context = False
         fake_inputs = real_inputs
-        if files:
-            from langchain.embeddings.huggingface import HuggingFaceEmbeddings
-            from langchain.vectorstores.base import VectorStoreRetriever
-            limited_context = True
-            msg = "加载索引中……"
-            logging.info(msg)
-            index = construct_index(self.api_key, file_src=files, load_from_cache_if_possible=load_from_cache_if_possible)
-            assert index is not None, "获取索引失败"
-            msg = "索引获取成功，生成回答中……"
-            logging.info(msg)
-            with retrieve_proxy():
-                retriever = VectorStoreRetriever(vectorstore=index, search_type="similarity_score_threshold", search_kwargs={
-                                                 "k": 6, "score_threshold": 0.5})
-                try:
-                    relevant_documents = retriever.get_relevant_documents(
-                        real_inputs)
-                except AssertionError:
-                    return self.prepare_inputs(real_inputs, use_websearch, files, reply_language, chatbot, load_from_cache_if_possible=False)
-            reference_results = [[d.page_content.strip("�"), os.path.basename(
-                d.metadata["source"])] for d in relevant_documents]
-            reference_results = add_source_numbers(reference_results)
-            display_append = add_details(reference_results)
-            display_append = "\n\n" + "".join(display_append)
-            real_inputs = (
-                replace_today(PROMPT_TEMPLATE)
-                .replace("{query_str}", real_inputs)
-                .replace("{context_str}", "\n\n".join(reference_results))
-                .replace("{reply_language}", reply_language)
-            )
-        elif use_websearch:
-            search_results = []
-            with DDGS() as ddgs:
-                ddgs_gen = ddgs.text(real_inputs, backend="lite")
-                for r in islice(ddgs_gen, 10):
-                    search_results.append(r)
-            reference_results = []
-            for idx, result in enumerate(search_results):
-                logging.debug(f"搜索结果{idx + 1}：{result}")
-                domain_name = urllib3.util.parse_url(result['href']).host
-                reference_results.append([result['body'], result['href']])
-                display_append.append(
-                    # f"{idx+1}. [{domain_name}]({result['href']})\n"
-                    f"<a href=\"{result['href']}\" target=\"_blank\">{idx+1}.&nbsp;{result['title']}</a>"
-                )
-            reference_results = add_source_numbers(reference_results)
-            # display_append = "<ol>\n\n" + "".join(display_append) + "</ol>"
-            display_append = '<div class = "source-a">' + \
-                "".join(display_append) + '</div>'
-            real_inputs = (
-                replace_today(WEBSEARCH_PTOMPT_TEMPLATE)
-                .replace("{query}", real_inputs)
-                .replace("{web_results}", "\n\n".join(reference_results))
-                .replace("{reply_language}", reply_language)
-            )
-        else:
-            display_append = ""
+        display_append = ""
         return limited_context, fake_inputs, display_append, real_inputs, chatbot
 
     def predict(
@@ -420,7 +365,6 @@ class BaseLLMModel:
         inputs,
         chatbot,
         stream=False,
-        use_websearch=False,
         files=None,
         reply_language="中文",
         should_check_token_count=True,
@@ -437,7 +381,7 @@ class BaseLLMModel:
             reply_language = "the same language as the question, such as English, 中文, 日本語, Español, Français, or Deutsch."
 
         limited_context, fake_inputs, display_append, inputs, chatbot = self.prepare_inputs(
-            real_inputs=inputs, use_websearch=use_websearch, files=files, reply_language=reply_language, chatbot=chatbot)
+            real_inputs=inputs, files=files, reply_language=reply_language, chatbot=chatbot)
         yield chatbot + [(fake_inputs, "")], status_text
 
         if (
@@ -528,7 +472,6 @@ class BaseLLMModel:
         self,
         chatbot,
         stream=False,
-        use_websearch=False,
         files=None,
         reply_language="中文",
     ):
@@ -554,7 +497,6 @@ class BaseLLMModel:
             inputs,
             chatbot,
             stream=stream,
-            use_websearch=use_websearch,
             files=files,
             reply_language=reply_language,
         )

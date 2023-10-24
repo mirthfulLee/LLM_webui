@@ -144,15 +144,7 @@ REDUCE_TOKEN_FACTOR = 0.5 # 与模型token上限想乘，得到目标token数。
 
 REPLY_LANGUAGES = [
     "简体中文",
-    "繁體中文",
     "English",
-    "日本語",
-    "Español",
-    "Français",
-    "Russian",
-    "Deutsch",
-    "한국어",
-    "跟随问题语言（不稳定）"
 ]
 
 HISTORY_NAME_METHODS = [
@@ -160,18 +152,6 @@ HISTORY_NAME_METHODS = [
     i18n("第一条提问"),
     i18n("模型自动总结（消耗tokens）"),
 ]
-
-
-WEBSEARCH_PTOMPT_TEMPLATE = """\
-Web search results:
-
-{web_results}
-Current date: {current_date}
-
-Instructions: Using the provided web search results, write a comprehensive reply to the given query. Make sure to cite results using [[number](URL)] notation after the reference. If the provided search results refer to multiple subjects with the same name, write separate answers for each subject.
-Query: {query}
-Reply in {reply_language}
-"""
 
 PROMPT_TEMPLATE = """\
 Context information is below.

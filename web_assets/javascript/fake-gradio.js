@@ -61,7 +61,6 @@ function setCheckboxes() {
     chatbotSingleSessionCB = gradioApp().querySelector('input[name="single-session-cb"]');
     chatbotOnlineSearchCB = gradioApp().querySelector('input[name="online-search-cb"]');
     grSingleSessionCB = gradioApp().querySelector("#gr-single-session-cb > label > input");
-    grOnlineSearchCB = gradioApp().querySelector("#gr-websearch-cb > label> input");
 
     chatbotSingleSessionCB.addEventListener('change', (e) => {
         grSingleSessionCB.checked = chatbotSingleSessionCB.checked;
@@ -82,11 +81,6 @@ function setCheckboxes() {
 function bgChangeSingleSession() {
     // const grSingleSessionCB = gradioApp().querySelector("#gr-single-session-cb > label > input");
     let a = chatbotSingleSessionCB.checked;
-    return [a];
-}
-function bgChangeOnlineSearch() {
-    // const grOnlineSearchCB = gradioApp().querySelector("#gr-websearch-cb > label> input");
-    let a = chatbotOnlineSearchCB.checked;
     return [a];
 }
 
