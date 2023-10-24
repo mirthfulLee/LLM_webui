@@ -189,22 +189,24 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
                         obj="toolbox"), elem_classes="close-btn")
                 with gr.Tabs(elem_id="chuanhu-toolbox-tabs"):
                     with gr.Tab(label=i18n("Prompt")):
-                        with gr.Accordion(label=i18n("加载Prompt模板"), open=False):
+                        retain_system_prompt_checkbox = gr.Checkbox(
+                            label=i18n("新建对话保留Prompt"), value=False, visible=True, elem_classes="switch-checkbox")
+
+                        with gr.Accordion(label=i18n("加载Prompt模板"), open=True):
                             with gr.Column():
                                 with gr.Row():
-                                    with gr.Column(scale=6):
+                                    with gr.Column(scale=2, min_width=250):
                                         templateFileSelectDropdown = gr.Dropdown(
-                                            label=i18n("选择Prompt模板集合文件"),
                                             choices=get_template_names(),
                                             multiselect=False,
                                             value=get_template_names()[0],
                                             container=False,
                                         )
-                                    with gr.Column(scale=1):
+                                    with gr.Column(scale=1, min_width=60):
                                         templateRefreshBtn = gr.Button(
                                             i18n("🔄 刷新"))
                                 with gr.Row():
-                                    with gr.Column():
+                                    with gr.Column(scale=3):
                                         templateSelectDropdown = gr.Dropdown(
                                             label=i18n("从Prompt模板中加载"),
                                             choices=load_template(
@@ -221,8 +223,6 @@ with gr.Blocks(theme=small_and_beautiful_theme) as demo:
                             value=INITIAL_SYSTEM_PROMPT,
                             lines=8
                         )
-                        retain_system_prompt_checkbox = gr.Checkbox(
-                            label=i18n("新建对话保留Prompt"), value=False, visible=True, elem_classes="switch-checkbox")
 
                     with gr.Tab(label=i18n("参数")):
                         gr.Markdown(i18n("# ⚠️ 务必谨慎更改 ⚠️"),
@@ -738,7 +738,7 @@ if __name__ == "__main__":
     reload_javascript()
     logging.info(
         colorama.Back.GREEN
-        + "\n本地部署可访问 http://localhost:" + server_port
+        + "\n本地部署可访问 http://localhost:" + str(server_port)
         + colorama.Style.RESET_ALL
     )
     demo.queue(concurrency_count=CONCURRENT_COUNT).launch(
